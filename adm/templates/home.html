@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Coupons</title>
+    {% include 'includes/head_tag.html' %}
+
+</head>
+<style>
+    select {
+        cursor: pointer;
+    }
+</style>
+<body>
+
+{% include 'includes/nav.html' %}
+<div class="container mt-5 text-center">
+    <form id="searchform">
+        <div class="row">
+            <div class="form-group col-lg-3">
+
+                <select class="form-control mb-4" id="Store">
+                    <option selected value="00">Select Store</option>
+                    {% for store in stores %}
+                        <option value="{{ store.id }}">{{ store.Name }}</option>
+                    {% endfor %}
+
+                </select>
+            </div>
+            <div class="col-lg-3 form-group mb-4">
+                <input type="text" class="form-control" placeholder="Enter Coupon Value" id="value">
+            </div>
+            <div class="col-lg-3 form-group">
+                <button type="button" class="btn btn-danger w-100" id="submit-btn">Search</button>
+            </div>
+        </div>
+    </form>
+
+</div>
+<div class="container mt-5 ">
+    <h6 id="error"></h6>
+    <div class="row" id="coupons">
+
+    </div>
+
+</div>
+
+<script>
+
+    $('#submit-btn').on('click', function (e) {
+        e.preventDefault();
+        let store = $('#Store option:selected').val()
+        let value = $('#value').val()
+        if (store === "00" || value === "") {
+            $("#error").text('Please enter valid store name and coupon value')
+        } else {
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'search-results' %}",
+                data: {
+                    store: $('#Store option:selected').val(),
+                    value: $('#value').val(),
+
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    action: 'post',
+
+                },
+                success: function (json) {
+                    $('#error').text('')
+                    let coupons = JSON.parse(json.coupons);
+                    let store = $('#Store option:selected').text()
+                    $("#coupons").html("")
+                    Object.values(coupons).forEach(value => {
+                        console.log(value.fields)
+
+                        $('#coupons').append(`<div class="col-lg-4"><div class="card">
+                                <div class="card-body">
+                                       <h4 class="card-title fst-italic">${value.fields.Name}</h4>
+                                    <h6 class="card-text mt-2">Code - ${value.fields.Code}</h6>
+                                    <h6 class="card-text">Value - ${value.fields.Value}</h6>
+                                 <h6 class="card-text">Store - ${store}</h6>
+                               <h6 class="card-text">Qty - ${value.fields.Qty}</h6>
+                                 <a  href="/checkout/${value.fields.Code}" class="btn btn-outline-danger w-50 float-end">Use this Coupon</a>
+
+                                      </div>
+                                         </div></div>`)
+                    });
+
+                },
+                error: function (res) {
+                    $("#error").text(res.responseText)
+                },
+
+
+            });
+        }
+    });
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,22 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light p-2">
+
+    <ul class="navbar-nav">
+        {% if request.user.is_authenticated %}
+            <li class="nav-item">
+
+                <h6><a class="nav-link" href="{% url 'logout' %}">Logout</a></h6>
+
+            </li>
+            <li class="nav-item">
+                <h6><a class="nav-link" href="{% url 'view-coupon' %}">View Coupons</a></h6>
+            </li>
+        {% else %}
+            <li class="nav-item">
+                <h6><a class="nav-link" href="{% url 'login' %}">Login</a></h6>
+            </li>
+        {% endif %}
+
+
+    </ul>
+
+</nav>

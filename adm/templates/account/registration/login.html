@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {% include 'includes/head_tag.html' %}
+    <link href="{% static 'css/reg.css' %}" rel="stylesheet">
+</head>
+<body>
+{% include 'includes/nav.html' %}
+{% if request.user.is_authenticated %}
+    <p>You're already logged in. Please visit page - <a class="link" href="{% url 'view-coupon' %}">Click Here</a></p>
+{% else %}
+
+    <div id='reg' class="container shadow-md p-5 mt-5 bg-white">
+    {% for message in messages %}
+        <div class="alert alert-danger" role="alert">
+            <p>{{ message }}</p>
+            <a href="{% url 'login' %}" class="alert-link">Try signing in again</a>.
+        </div>
+    {% endfor %}
+
+    <h3 class="mb-3">Log in to your account!</h3>
+
+    <form autocomplete="off" method="post"
+          action="{% url 'view-coupon' %}">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <h5>{{ form.username.label }}</h5>
+            {{ form.username }}
+            {{ form.username.errors }}
+            <p class="text-muted">{{ form.username.help_text }}</p>
+        </div>
+        <div class="form-group">
+            <h5>{{ form.password.label }}</h5>
+            {{ form.password }}
+            {{ form.password.errors }}
+            {{ form.password.help_text }}
+        </div>
+
+        <button type='submit' class=" btn2 btn-primary">Login</button>
+    </form>
+{% endif %}
+
+</div>
+
+</body>
+</html>
